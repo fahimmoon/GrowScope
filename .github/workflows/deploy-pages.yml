@@ -25,12 +25,34 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Pages
         uses: actions/configure-pages@v3
+      - name: Verify static assets
+        run: |
+          if [ -d "assets" ]; then
+            echo "✓ Assets directory exists"
+            ls -la assets/
+          else
+            echo "Creating assets directory"
+            mkdir -p assets
+          fi
       - name: Build site
-        run: echo "Add your build commands here"
+        run: |
+          # Add your build commands here
+          # Example for a basic static site:
+          if [ -f "package.json" ]; then
+            npm ci
+            npm run build
+          fi
+          # Verify all referenced resources exist
+          if [ -f "404.html" ]; then
+            echo "✓ 404 page exists"
+          else
+            echo "Creating default 404 page"
+            echo "<h1>Page Not Found</h1>" > 404.html
+          fi
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: '.'
+          path: './dist'  # Adjust this to your build output directory
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
